@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Inspired Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SocketIO Client Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Government Logo">
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item">
+                <a href="{{ url_for('home_routes.home') }}">
+                    <i class="fas fa-home"></i> <span>Home</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('map_routes.map_page') }}">
+                    <i class="fas fa-map"></i> <span>Map</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('department_routes.department_home') }}">
+                    <i class="fas fa-building"></i> <span>Department</span>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a href="#">
+                    <i class="fas fa-list"></i> <span>Category</span>
+                    <i class="fas fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="#" data-category="Education & Schools">Water Issues</a></li>
+                    <li><a href="#" data-category="Public Transport Issues">Electricity Issues</a></li>
+                    <li><a href="#" data-category="Roads & Infrastructure">Road Maintenance</a></li>
+                    <li><a href="#" data-category="sanitation">Illegal Construction & Encroachment</a></li>
+                </ul>
+            </li>
+            <li class="nav-item search-bar">
+                <form class="search-form">
+                    <input type="text" placeholder="Search..." class="search-input">
+                    <button type="submit" class="search-button">🔍</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1>Welcome to Our Website</h1>
+        <p>This is a sample website inspired by Indian government websites.</p>
+
+        <!-- Real-Time Complaint Chart -->
+        <div class="chart-container">
+            <h2>Complaints in Last 5 Minutes</h2>
+            <canvas id="complaintChart"></canvas>
+        </div>
+
+        <!-- Complaint Status Pie Chart -->
+        <div class="chart-container" id="pieChartSection">
+            <h2>Complaint Status by Category</h2>
+            <canvas id="complaintPieChart"></canvas>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Learn more about our mission and vision.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: contact@example.com</p>
+                <p>Phone: +91 123 456 7890</p>
+            </div>
+            <div class="footer-section">
+                <h3>Important Links</h3>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Government Inspired Website. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize SocketIO
+        const socket = io();
+
+        // Real-Time Complaint Chart
+        const ctx = document.getElementById('complaintChart').getContext('2d');
+        const complaintChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],  // Time intervals (e.g., 10:00, 10:05, 10:10)
+                datasets: [{
+                    label: 'Complaints in Last 5 Minutes',
+                    data: [],  // Number of complaints in each interval
+                    borderColor: '#004a8d',
+                    backgroundColor: 'rgba(0, 74, 141, 0.2)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Time' } },
+                    y: { title: { display: true, text: 'Number of Complaints' }, beginAtZero: true }
+                }
+            }
+        });
+
+        // Fetch complaint chart data
+        function fetchComplaintData() {
+            fetch("{{ url_for('home_routes.get_complaint_chart') }}")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Complaint Chart Data:', data); // Debugging
+
+                    // Update the chart with the new data
+                    complaintChart.data.labels.push(data.labels[0]);  // Add the latest time label
+                    complaintChart.data.datasets[0].data.push(data.values[0]);  // Add the latest complaint count
+
+                    // Keep only the last 12 data points (1 hour of data)
+                    if (complaintChart.data.labels.length > 12) {
+                        complaintChart.data.labels.shift();  // Remove the oldest label
+                        complaintChart.data.datasets[0].data.shift();  // Remove the oldest data point
+                    }
+
+                    // Update the chart
+                    complaintChart.update();
+                })
+                .catch(error => console.error('Error fetching complaint data:', error));
+        }
+
+        // Fetch data every 5 minutes (300,000 milliseconds)
+        setInterval(fetchComplaintData, 300000);
+
+        // Initial fetch
+        fetchComplaintData();
+
+        // Pie Chart
+        const pieCtx = document.getElementById('complaintPieChart').getContext('2d');
+        const complaintPieChart = new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Pending', 'Resolved', 'In Progress'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: ['#dc3545', '#28a745', '#ffc107'],
+                    borderColor: '#ffffff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Fetch pie chart data
+        function fetchPieChartData(category) {
+            fetch(`{{ url_for('home_routes.pie_chart', category='') }}${category}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Pie Chart Data:', data); // Debugging
+                    complaintPieChart.data.datasets[0].data = data;
+                    complaintPieChart.update();
+                })
+                .catch(error => console.error('Error fetching pie chart data:', error));
+        }
+
+        // Handle dropdown menu clicks
+        document.querySelectorAll('.dropdown-menu a').forEach(item => {
+            item.addEventListener('click', event => {
+                // event.preventDefault(); // Prevent default link behavior
+                const category = event.target.getAttribute('data-category');
+                fetchPieChartData(category);
+
+                // Smooth scroll to the pie chart section
+                document.getElementById('pieChartSection').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Initial fetch for default category
+        fetchPieChartData('water');
+    </script>
+</body>
+</html>

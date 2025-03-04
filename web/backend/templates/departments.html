@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departments</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+     <!-- Navbar -->
+     <nav class="navbar">
+        <!-- Logo on the left -->
+        <div class="logo">
+            <img src="../static/logo.png" alt="Government Logo">
+        </div>
+
+        <!-- Navigation Links -->
+        <ul class="nav-links">
+            <!-- Home with icon and text -->
+            <li class="nav-item">
+                <a href="home">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+
+            <!-- Map with icon and text -->
+            <li class="nav-item">
+                <a href="map">
+                    <i class="fas fa-map"></i>
+                    <span>Map</span>
+                </a>
+            </li>
+
+            <!-- Department with icon and text -->
+            <li class="nav-item">
+                <a href="department">
+                    <i class="fas fa-building"></i>
+                    <span>Department</span>
+                </a>
+            </li>
+
+            <!-- Category dropdown with icon and text -->
+            <li class="nav-item dropdown">
+                <a href="#">
+                    <i class="fas fa-list"></i>
+                    <span>Category</span>
+                    <i class="fas fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="#" data-category="water">Water Issues</a></li>
+                    <li><a href="#" data-category="electricity">Electricity Issues</a></li>
+                    <li><a href="#" data-category="roads">Road Maintenance</a></li>
+                    <li><a href="#" data-category="sanitation">Sanitation</a></li>
+                </ul>
+            </li>
+
+            <!-- Search bar -->
+            <li class="nav-item search-bar">
+                <form class="search-form">
+                    <input type="text" placeholder="Search..." class="search-input">
+                    <button type="submit" class="search-button">🔍</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Departments Grid -->
+    <main class="departments-grid">
+        <h1>Departments</h1>
+        <div class="grid-container">
+            <!-- Department Cards -->
+            <div class="card">
+                <a href="{{ url_for('auth_routes.login') }}">
+                    <img src="dept1.jpg" alt="Public Works Department (PWD)">
+                    <h3>Public Works Department (PWD)</h3>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('auth_routes.login') }}">
+                    <img src="dept2.jpg" alt="Electricity Department">
+                    <h3>Electricity Board</h3>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('auth_routes.login') }}">
+                    <img src="dept3.jpg" alt="Water Department">
+                    <h3>Water Supply & Sewerage Board</h3>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('auth_routes.login') }}">
+                    <img src="dept4.jpg" alt="Sanitation Department">
+                    <h3>Municipal Corporation</h3>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('auth_routes.login') }}">
+                    <img src="dept5.jpg" alt="Transport Department">
+                    <h3>Police Department</h3>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('auth_routes.login') }}">
+                    <img src="dept6.jpg" alt="Traffic Police Department">
+                    <h3>Health & Medical Services Department</h3>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('auth_routes.login') }}">
+                    <img src="dept7.jpg" alt="Health Department">
+                    <h3>Transport Department</h3>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('auth_routes.login') }}">
+                    <img src="dept8.jpg" alt="Education Department">
+                    <h3>Anti-Corruption Bureau (ACB)</h3>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('auth_routes.login') }}">
+                    <img src="dept9.jpg" alt="Police Department">
+                    <h3>Education Department</h3>
+                </a>
+            </div>
+            <div class="card">
+                <a href="{{ url_for('auth_routes.login') }}">
+                    <img src="dept10.jpg" alt="Municipal Corporation">
+                    <h3>Urban Development Department</h3>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Learn more about our mission and vision.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: contact@example.com</p>
+                <p>Phone: +91 123 456 7890</p>
+            </div>
+            <div class="footer-section">
+                <h3>Important Links</h3>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Government Inspired Website. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Government Logo">
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item">
+                <a href="{{ url_for('home_routes.home') }}">
+                    <i class="fas fa-home"></i> <span>Home</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('map_routes.map_page') }}">
+                    <i class="fas fa-map"></i> <span>Map</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('department_routes.department_complaints', department_name=session.get('department')) }}">
+                    <i class="fas fa-building"></i> <span>Department</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Complaint List Section -->
+    <main class="complaint-list">
+        <h2>Complaint List</h2>
+        <table id="complaint-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>complaint_id</th>
+                    <th>Complaint</th>
+                    <th>Location</th>
+                    <th>Source</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Complaints will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        // Function to fetch complaints dynamically
+        function fetchComplaints() {
+            const departmentName = "{{ session.get('department') }}";  // Get the user's department from the session
+            fetch(`/department/${departmentName}/complaints`)
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector("#complaint-table tbody");
+                    tableBody.innerHTML = "";  // Clear existing rows
+
+                    // Populate the table with complaints
+                    data.forEach((complaint, index) => {
+                        const row = document.createElement("tr");
+                        row.className = "complaint-row";
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${complaint.complaint_id}</td>
+                            <td>${complaint.Complaint}</td>
+                            <td>${complaint.location}</td>
+                            <td>${complaint.source}</td>
+                            <td class="${complaint.status === 'Pending' ? 'status-pending' : 'status-resolved'}">
+                                ${complaint.status}
+                            </td>
+                        `;
+
+                        // Add a details row
+                        const detailsRow = document.createElement("tr");
+                        detailsRow.className = "expandable";
+                        detailsRow.innerHTML = `
+                            <td colspan="6">${complaint.text}</td>
+                        `;
+                        detailsRow.style.display = "none";  // Hide details by default
+
+                        // Add click event to toggle details
+                        row.addEventListener("click", () => {
+                            detailsRow.style.display = detailsRow.style.display === "table-row" ? "none" : "table-row";
+                        });
+
+                        tableBody.appendChild(row);
+                        tableBody.appendChild(detailsRow);
+                    });
+                })
+                .catch(error => console.error("Error fetching complaints:", error));
+        }
+
+        // Fetch complaints when the page loads
+        document.addEventListener("DOMContentLoaded", fetchComplaints);
+
+        // Optionally, refresh complaints periodically
+        setInterval(fetchComplaints, 5000);  // Refresh every 5 seconds
+    </script>
+</body>
+</html>

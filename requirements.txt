@@ -1,0 +1,11 @@
+Flask
+Flask-SocketIO
+pymongo
+nltk
+scikit-learn
+joblib
+requests
+beautifulsoup4
+selenium
+schedule
+tweepy
